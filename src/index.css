@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   background-color: #02010a;
@@ -6,27 +8,16 @@
 
 body {
   margin: 0;
-  font-family: 'Space Grotesk', 'JetBrains Mono', sans-serif;
-  background: 
-    radial-gradient(at 0% 0%, rgba(168, 85, 247, 0.12) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
-    #02010a;
+  background: radial-gradient(at 0% 0%, rgba(168, 85, 247, 0.12) 0px, transparent 50%),
+              radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
+              #02010a;
   min-height: 100vh;
   color: white;
+  font-family: sans-serif;
 }
 
 .glass {
   background: rgba(15, 12, 33, 0.5);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(168, 85, 247, 0.15);
-}
-
-@keyframes float {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-8px) rotate(0.5deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
-}
-
-.animate-float {
-  animation: float 5s ease-in-out infinite;
 }
