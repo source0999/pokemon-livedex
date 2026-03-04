@@ -56,7 +56,13 @@ export default function App() {
 
       <main className="max-w-7xl mx-auto">
         {selectedGame ? (
-          <DexGrid gameKey={selectedGame} config={GAME_CONFIG[selectedGame]} progress={progress[selectedGame] || []} onBack={() => setSelectedGame(null)} />
+          <DexGrid 
+  gameKey={selectedGame} 
+  config={GAME_CONFIG[selectedGame]} 
+  progress={progress[selectedGame] || []} 
+  onBack={() => setSelectedGame(null)} 
+  user={user} /* ADD THIS LINE */
+/>
         ) : currentTab === "master" ? (
           <MasterDex progress={progress} onSelectGame={setSelectedGame} />
         ) : (
