@@ -2,16 +2,18 @@ import React, { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import CircularProgress from "./CircularProgress"; 
-// Ensure SaveImporter.jsx exists in your components folder
 import SaveImporter from "./SaveImporter"; 
 
-export default function DexGrid({ gameKey, config, progress = [], onBack, user }) {
+export default function DexGrid({ gameKey, config, progress = {}, onBack, user }) {
   const [pokemonList, setPokemonList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
+  // Safely get progress for this specific game
+  const gameProgress = progress[gameKey] || [];
+
   const percent = pokemonList.length > 0 
-    ? Math.round((progress.length / pokemonList.length) * 100) 
+    ? Math.round((gameProgress.length / pokemonList.length) * 100) 
     : 0;
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function DexGrid({ gameKey, config, progress = [], onBack, user }
   const togglePokemon = async (id) => {
     if (!user) return;
     const userRef = doc(db, "users", user.uid);
-    const isCaught = progress.includes(id);
+    const isCaught = gameProgress.includes(id);
     await updateDoc(userRef, {
       [`progress.${gameKey}`]: isCaught ? arrayRemove(id) : arrayUnion(id)
     });
@@ -53,7 +55,6 @@ export default function DexGrid({ gameKey, config, progress = [], onBack, user }
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* NEW TOP BAR WITH GRAPH AND IMPORTER */}
       <div className="bg-[#0a0a0f] border border-white/5 rounded-[2.5rem] p-8 mb-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl">
         <div className="flex items-center gap-6">
           <button onClick={onBack} className="p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-all border border-white/5 text-white group">
@@ -64,15 +65,13 @@ export default function DexGrid({ gameKey, config, progress = [], onBack, user }
             <CircularProgress percentage={percent} size={70} strokeWidth={7} color="#a855f7" />
             <div>
               <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white leading-none">{config.label}</h2>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">Data Synchronized: {progress.length} Units</p>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-2">Data Synchronized: {gameProgress.length} Units</p>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-4 w-full md:w-auto">
-          {/* Re-adding the SaveImporter component */}
           <SaveImporter gameKey={gameKey} user={user} />
-          
           <input 
             type="text"
             placeholder="Search Database..."
@@ -83,10 +82,9 @@ export default function DexGrid({ gameKey, config, progress = [], onBack, user }
         </div>
       </div>
 
-      {/* GRID */}
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
         {pokemonList.filter(p => p.name.includes(search.toLowerCase())).map((poke) => {
-          const isCaught = progress.includes(poke.id);
+          const isCaught = gameProgress.includes(poke.id);
           return (
             <button
               key={poke.id}
